@@ -3,8 +3,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+import japanize_matplotlib
 
-st.title('対応のない2群データの統計解析')
+st.title('2群データの統計解析')
+
+option_radio = st.radio('対応の有り無しを選択してください', ('対応あり', '対応なし'))
 
 st.text('1行のデータ名と数値のデータ列のあるファイルを作成し、読み込ませてください。')
 st.text('例: ')
@@ -174,10 +177,10 @@ def analyze(df1, df2):
             st.text(f'p: {student_p}')
 
             if student_p > 0.05:
-                st.text('帰無仮説を採択 2群間に有意差なし')
+                st.text('帰無仮説を採択 2群間の代表値に有意差なし')
                 boxplot(df_1, df_2, student_p, column1, column2)
             else:
-                st.text('帰無仮説を棄却 2群間に有意差あり')
+                st.text('帰無仮説を棄却 2群間の代表値に有意差あり')
                 boxplot(df_1, df_2, student_p, column1, column2)
         else: 
             st.text('帰無仮説を棄却 母集団の分散に差はある')
@@ -208,6 +211,54 @@ def analyze(df1, df2):
             st.text('帰無仮説を棄却 2群間の代表値に有意差あり')
             boxplot(df_1, df_2, man_p, column1, column2)
 
-if (uploaded_file1 != None) and (uploaded_file2 != None):
+def analyze2(df1, df2):
+
+    df_1 = df1
+    df_2 = df2
+    column1 = df_1.columns[0]
+    column2 = df_2.columns[0]
+
+    shapiro_s_1, shapiro_p_1 = stats.shapiro(np.sort(df_1.iloc[:,0]))
+    shapiro_s_2, shapiro_p_2 = stats.shapiro(np.sort(df_2.iloc[:,0]))
+
+    st.text('--------------------')
+    st.text('Shapiro Test')
+    st.text(f'1. {column1}: {shapiro_p_1}')
+    st.text(f'2. {column2}: {shapiro_p_2}')
+    if shapiro_p_1 > 0.05 and shapiro_p_2 > 0.05:
+        st.text('帰無仮説を採択 標本は正規分布に従う')
+
+        # T test
+        t_t, t_p = stats.ttest_rel(df_1.iloc[:,0], df_2.iloc[:,0], alternative='two-sided')
+        st.text('T test')
+        st.text(f'p: {t_p}')
+        if t_p > 0.05:
+            st.text('帰無仮説を採択 2群間の代表値に有意差なし')
+            boxplot(df_1, df_2, t_p, column1, column2)
+        else:
+            st.text('帰無仮説を棄却 2群間の代表値に有意差あり')
+            boxplot(df_1, df_2, t_p, column1, column2)
+
+
+    else:
+        st.text('帰無仮説を棄却 標本は正規分布に従わない')
+
+        # Wilcoxon符号付順位和検定
+        wilcoxon_t, wilcoxon_p = stats.wilcoxon(df_1.iloc[:,0], df_2.iloc[:,0], alternative='two-sided')
+        st.text('Wilcoxon test')
+        st.text(f'p: {wilcoxon_p}')
+
+        if wilcoxon_p > 0.05:
+            st.text('帰無仮説を採択 2群間の代表値に有意差なし')
+            boxplot(df_1, df_2, wilcoxon_p, column1, column2)
+        else:
+            st.text('帰無仮説を棄却 2群間の代表値に有意差あり')
+            boxplot(df_1, df_2, wilcoxon_p, column1, column2)
+
+if (uploaded_file1 != None) and (uploaded_file2 != None) and option_radio=='対応なし':
     st.header('読み込み成功！')
     analyze(df1, df2)
+
+if (uploaded_file1 != None) and (uploaded_file2 != None) and option_radio=='対応あり':
+    st.header('読み込み成功！')
+    analyze2(df1, df2)
