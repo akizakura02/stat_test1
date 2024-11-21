@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
-import matplotlib.font_manager as fm
 
 st.title('2群データの統計解析')
 
@@ -122,10 +121,6 @@ def boxplot(df_1, df_2, p, column1, column2):
     label = [column1, column2]
 
     plt.figure(figsize=(4, 5))
-    jpn_fonts=list(np.sort([ttf for ttf in fm.findSystemFonts() if 'ipaexg' in ttf or 'msgothic' in ttf or 'japan' in ttf or 'ipafont' in ttf]))
-    jpn_font=jpn_fonts[0]
-    prop = fm.FontProperties(fname=jpn_font)
-    plt.rcParams['font.family'] = prop.get_name()
     plt.boxplot([df_1.iloc[:,0], df_2.iloc[:,0]], tick_labels=label)
     if p >0.05:
         barplot_annotate_brackets(1, 2, 'n.s.', bars, heights)
