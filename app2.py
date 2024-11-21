@@ -105,7 +105,7 @@ def barplot_annotate_brackets(num1, num2, data, center,
   
     barx = [lx, lx, rx, rx]
     bary = [y, y+barh, y+barh, y]
-    mid = ((lx+rx)/2, y+barh)
+    mid = ((lx+rx)/2, y+barh+0.005)
   
     plt.plot(barx, bary, c='black')
   
@@ -260,9 +260,9 @@ def analyze2(df1, df2):
             boxplot(df_1, df_2, wilcoxon_p, column1, column2)
 
 if (uploaded_file1 != None) and (uploaded_file2 != None) and option_radio=='対応なし':
-    st.header('読み込み成功！')
+    st.header('読み込み成功！対応のない2群の検定')
     analyze(df1, df2)
 
 if (uploaded_file1 != None) and (uploaded_file2 != None) and option_radio=='対応あり':
-    st.header('読み込み成功！')
+    st.header('読み込み成功！対応のある2群の検定')
     analyze2(df1, df2)
