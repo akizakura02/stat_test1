@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+import matplotlib.font_manager as fm
 
 st.title('2群データの統計解析')
 
